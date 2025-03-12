@@ -479,10 +479,10 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "./",
+      "plot": "C:/Users/delay/Documents/vscode-workspace/combat-pcb/manufacturing/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "combat-pcb.step",
       "svg": "",
       "vrml": ""
     },
