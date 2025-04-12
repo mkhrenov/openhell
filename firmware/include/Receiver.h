@@ -8,8 +8,8 @@ namespace rx {
     #define CHAN_Y      2
     #define CHAN_W      3
     #define CHAN_PHI    4
-    #define CHAN_HOV    5
-    #define CHAN_ARM    6
+    #define CHAN_ARM    5
+    #define CHAN_HOV    6
     #define CHAN_CAL    7
     #define CHAN_RAD    8
 

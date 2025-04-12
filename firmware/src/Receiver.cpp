@@ -43,7 +43,7 @@ namespace rx
 
     float omega_setpoint(void)
     {
-        return (channel(CHAN_W) - 1000) * 100 * PI / 10; // rad/s
+        return (channel(CHAN_W) - 1500) / 100.0; // rad/s
     }
 
     float ax_setpoint(void)
