@@ -5,7 +5,7 @@ namespace fans {
     #define GPIO_FAN_LEFT   GPIO_NUM_8
     #define GPIO_FAN_RIGHT  GPIO_NUM_9
 
-    #define THRUST_CONSTANT 0.0185      // N / V^2, F = k * (V * throttle)^2
+    #define THRUST_CONSTANT 0.005     // N / u
     #define FAN_UPDATE_PERIOD_US 100
 
     void begin(void);

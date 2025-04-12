@@ -20,17 +20,17 @@ namespace fans
 
     void begin(void)
     {
-        fan_center.install(GPIO_FAN_CENTER, RMT_CHANNEL_0);
+        fan_center.install(GPIO_FAN_CENTER, RMT_CHANNEL_1);
         fan_center.init();
         fan_center.setReversed(false);
         fan_center.set3DMode(true);
 
-        fan_left.install(GPIO_FAN_LEFT, RMT_CHANNEL_0);
+        fan_left.install(GPIO_FAN_LEFT, RMT_CHANNEL_2);
         fan_left.init();
         fan_left.setReversed(false);
         fan_left.set3DMode(true);
 
-        fan_right.install(GPIO_FAN_RIGHT, RMT_CHANNEL_0);
+        fan_right.install(GPIO_FAN_RIGHT, RMT_CHANNEL_3);
         fan_right.init();
         fan_right.setReversed(false);
         fan_right.set3DMode(true);
@@ -45,11 +45,24 @@ namespace fans
             float F1 = thrust_mean + thrust_amplitude * cos(angle - thrust_phase);
             float F2 = thrust_mean - thrust_amplitude * cos(angle - thrust_phase);
 
-            throttle_right = (int16_t)(sqrt(F1 / THRUST_CONSTANT) / battery_voltage * 1000);
-            throttle_left = (int16_t)(sqrt(F2 / THRUST_CONSTANT) / battery_voltage * 1000);
+            throttle_right = (F1 / THRUST_CONSTANT);
+            throttle_left = (F2 / THRUST_CONSTANT);
+
+            // if (abs(throttle_left) > 60)
+            //     throttle_left += 200 * throttle_left / abs(throttle_left);
+            // if (abs(throttle_right) > 60)
+            //     throttle_right += 200 * throttle_right / abs(throttle_right);
 
             throttle_right = constrain(throttle_right, -999, 999);
             throttle_left = constrain(throttle_left, -999, 999);
+
+            // Serial.print(throttle_center);
+            // Serial.print('\t');
+            // Serial.print(throttle_right);
+            // Serial.print('\t');
+            // Serial.print(throttle_left);
+            // Serial.print('\t');
+            // Serial.println();
 
             fan_center.sendThrottle3D(throttle_center);
             fan_right.sendThrottle3D(throttle_right);

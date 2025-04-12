@@ -126,9 +126,9 @@ void loop()
     if ((state == STATE_ARMED) || (state == STATE_SPUN_UP) || (state == STATE_CALIBRATION))
     {
         // Handle rotation control
-        float omega_error = rx::omega_setpoint() - omega;
-        float F_m = rotation_controller::calculate_control(omega_error);
-        fans::set_thrust_mean(F_m);
+        // float omega_error = rx::omega_setpoint() - omega;
+        // float F_m = rotation_controller::calculate_control(omega_error);
+        fans::set_thrust_mean(rx::omega_setpoint());
 
         // Handle translation
         float ax = rx::ax_setpoint();
@@ -168,8 +168,8 @@ void loop()
             digitalWrite(LED_RED, LOW);
             digitalWrite(LED_GREEN, LOW);
             digitalWrite(LED_BLUE, HIGH);
-            strip.setPixelColor(0, 0x00FFFF00);
-            strip.setPixelColor(1, 0x00FFFF00);
+            strip.setPixelColor(0, 0x00FF9900);
+            strip.setPixelColor(1, 0x00FF9900);
             break;
 
         case STATE_ARMED:
@@ -186,6 +186,10 @@ void loop()
             digitalWrite(LED_BLUE, LOW);
             strip.setPixelColor(0, 0x000000FF);
             strip.setPixelColor(1, 0x000000FF);
+            if (theta > PI / 18.0) {
+                strip.setPixelColor(0, 0);
+                strip.setPixelColor(1, 0);
+            }
             break;
 
         case STATE_CALIBRATION:
