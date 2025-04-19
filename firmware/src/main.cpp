@@ -32,8 +32,6 @@ void setup()
     imus::begin();
     fans::begin();
 
-    imus::calibrate();
-
     rotation_controller::begin();
 
     pinMode(LED_RED, OUTPUT);
@@ -202,6 +200,7 @@ void loop()
         }
 
         strip.show();
+        imus::print();
     }
     // Update outputs
     fans::update(theta);
