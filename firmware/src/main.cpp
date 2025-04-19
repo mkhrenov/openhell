@@ -55,8 +55,9 @@ void loop()
     imus::update();
 
     // Integrate gyro
-    omega = abs(imus::gyro_x());
+    omega = imus::gyro_y();
     theta += omega * dt;
+    rx::omega_telemetry(omega);
 
     // Handle wraparound
     if (theta > 2 * PI)

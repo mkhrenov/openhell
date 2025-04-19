@@ -56,4 +56,17 @@ namespace rx
         return (channel(CHAN_Y) - 1500) * 1e-3; // m/s^2
     }
 
+    void omega_telemetry(float omega)
+    {
+        static unsigned long last_telem_us = micros();
+
+        if (micros() - last_telem_us > 100000UL)
+        {
+            last_telem_us = micros();
+            crsf_sensor_vario_t vario = {0};
+            vario.verticalspd = htobe16((uint16_t)(100 * 60.0 * omega / 2.0 / PI)); // RPM
+            crsf.queuePacket(CRSF_SYNC_BYTE, CRSF_FRAMETYPE_VARIO, &vario, sizeof(vario));
+        }
+    }
+
 }
