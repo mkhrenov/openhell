@@ -3,7 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define NUM_LEDS 2
-#define LED_DATA_PIN GPIO_NUM_10
+#define LED_DATA_PIN GPIO_NUM_10 // D7
 
 // Local includes
 #include "InertialSensors.h"
