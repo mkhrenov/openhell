@@ -201,7 +201,7 @@ void loop()
         }
 
         strip.show();
-        imus::print();
+        // imus::print();
     }
     // Update outputs
     fans::update(theta);
