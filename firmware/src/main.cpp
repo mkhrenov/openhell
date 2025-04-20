@@ -18,7 +18,7 @@ float theta = 0; // heading, rad
 float omega = 0; // angular velocity, rad/s
 
 unsigned long last_cycle_us = 0;
-#define CYCLE_TIME_US 10
+#define CYCLE_TIME_US 10 // i.e., run loop at 100 kHz
 
 // The leds
 Adafruit_NeoPixel strip(NUM_LEDS, LED_DATA_PIN, NEO_RGB + NEO_KHZ800);
@@ -43,7 +43,7 @@ void setup()
 
 void loop()
 {
-    if (micros() - last_cycle_us < 10)
+    if (micros() - last_cycle_us < CYCLE_TIME_US)
     {
         return;
     }
@@ -136,16 +136,14 @@ void loop()
         float phi_a = atan2f(ay, ax);
 
         // Only attempt to translate if we're spun-up
-        if (state == STATE_SPUN_UP)
-        {
-            fans::set_thrust_amplitude(mag_a * m);
-            fans::set_thrust_phase(phi_a);
-        }
-        else
-            fans::set_thrust_amplitude(0);
+        fans::set_thrust_amplitude((abs(omega) > 2 * PI ? 1.0 : (abs(omega) / (2 * PI))) * mag_a * m);
+        fans::set_thrust_phase(phi_a);
     }
     else
+    {
         fans::set_thrust_mean(0);
+        fans::set_thrust_amplitude(0);
+    }
 
     static unsigned long last_led_us = micros();
     if (micros() - last_led_us > 10000UL)
@@ -185,7 +183,8 @@ void loop()
             digitalWrite(LED_BLUE, LOW);
             strip.setPixelColor(0, 0x000000FF);
             strip.setPixelColor(1, 0x000000FF);
-            if (theta > PI / 18.0) {
+            if (theta > PI / 18.0)
+            {
                 strip.setPixelColor(0, 0);
                 strip.setPixelColor(1, 0);
             }
@@ -203,6 +202,7 @@ void loop()
         strip.show();
         // imus::print();
     }
+
     // Update outputs
     fans::update(theta);
 }
