@@ -20,5 +20,7 @@ namespace imus {
     float high_accel_y(void);
     float high_accel_z(void);
 
+    float angular_velocity(void);
+
     void print(void);
 }

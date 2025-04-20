@@ -55,7 +55,7 @@ void loop()
     imus::update();
 
     // Integrate gyro
-    omega = imus::gyro_y();
+    omega = imus::angular_velocity();
     theta += omega * dt;
     rx::omega_telemetry(omega);
 

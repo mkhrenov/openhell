@@ -8,7 +8,7 @@ namespace imus
     Adafruit_H3LIS331 highg_imu;
 
     sensors_event_t high_accel;
-    sensors_event_t low_accel_offset, high_accel_offset, gyro_offset;
+    float highg_radius = 0.048; // meters
     unsigned long last_imu_update_us = 0;
 
     void begin(void)
@@ -55,51 +55,55 @@ namespace imus
 
     float low_accel_x(void)
     {
-        // return low_accel.acceleration.x - low_accel_offset.acceleration.x;
-        // return ((float)accelerometer[0]); // / 1000.0 * 9.8;
         return lowg_imu.accelX();
     }
     float low_accel_y(void)
     {
-        // return low_accel.acceleration.y - low_accel_offset.acceleration.y;
-        // return ((float)accelerometer[1]); // / 1000.0 * 9.8;
         return lowg_imu.accelY();
     }
     float low_accel_z(void)
     {
-        // return low_accel.acceleration.z - low_accel_offset.acceleration.z;
-        // return ((float)accelerometer[2]); // / 1000.0 * 9.8;
         return lowg_imu.accelZ();
     }
     float gyro_x(void)
     {
-        // return gyro.gyro.x - gyro_offset.gyro.x;
-        // return ((float)gyroscope[0]); // / 1000.0 / 180.0 * PI;
         return lowg_imu.gyroX();
     }
     float gyro_y(void)
     {
-        // return gyro.gyro.y - gyro_offset.gyro.y;
-        // return ((float)gyroscope[1]); // / 1000.0 / 180.0 * PI;
         return lowg_imu.gyroY();
     }
     float gyro_z(void)
     {
-        // return gyro.gyro.z - gyro_offset.gyro.z;
-        // return ((float)gyroscope[2]); // / 1000.0 / 180.0 * PI;
         return lowg_imu.gyroZ();
     }
     float high_accel_x(void)
     {
-        return high_accel.acceleration.x - high_accel_offset.acceleration.x;
+        return high_accel.acceleration.x;
     }
     float high_accel_y(void)
     {
-        return high_accel.acceleration.y - high_accel_offset.acceleration.y;
+        return high_accel.acceleration.y;
     }
     float high_accel_z(void)
     {
-        return high_accel.acceleration.z - high_accel_offset.acceleration.z;
+        return high_accel.acceleration.z;
+    }
+
+    float angular_velocity(void)
+    {
+        float omega_lowg = gyro_y();
+        float omega_highg = sqrtf(high_accel_z() / highg_radius); // rad/s
+
+        const float lowg_cutoff_h = 2000.0 * PI / 180.0;
+        const float lowg_cutoff_l = 1500.0 * PI / 180.0;
+
+        float f = (omega_lowg - lowg_cutoff_l) / (omega_highg - omega_lowg);
+        f = constrain(f, 0.0, 1.0);
+
+        float omega = (1 - f) * omega_lowg + f * omega_highg;
+
+        return omega;
     }
 
     void print(void)
