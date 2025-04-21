@@ -9,6 +9,7 @@ namespace imus {
 
     void begin(void);
     void update(void);
+    void calibrate(void);
 
     float low_accel_x(void);
     float low_accel_y(void);
@@ -19,6 +20,9 @@ namespace imus {
     float high_accel_x(void);
     float high_accel_y(void);
     float high_accel_z(void);
+
+    float get_offset(void);
+    void set_rescale(float rs);
 
     float angular_velocity(void);
 

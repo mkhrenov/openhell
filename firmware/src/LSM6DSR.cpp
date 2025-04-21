@@ -113,9 +113,9 @@ void LSM6DSR::update()
     a_z = GRAV * (float)(a_z_raw * accel_fsr) / ACCEL_RANGE;
 
     temp = (float)temp_raw / 340.0f + 36.53f;
-    g_x = (float)(g_x_raw * gyro_fsr) / GYRO_RANGE * (float)PI / 180.0f;
-    g_y = (float)(g_y_raw * gyro_fsr) / GYRO_RANGE * (float)PI / 180.0f;
-    g_z = (float)(g_z_raw * gyro_fsr) / GYRO_RANGE * (float)PI / 180.0f;
+    g_x = (float)((int)g_x_raw * gyro_fsr) / (float)GYRO_RANGE * (float)PI / 180.0f;
+    g_y = (float)((int)g_y_raw * gyro_fsr) / (float)GYRO_RANGE * (float)PI / 180.0f;
+    g_z = (float)((int)g_z_raw * gyro_fsr) / (float)GYRO_RANGE * (float)PI / 180.0f;
 }
 
 void LSM6DSR::set_register(uint8_t reg, uint8_t val) const

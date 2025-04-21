@@ -45,8 +45,8 @@ namespace fans
             float F1 = thrust_mean + thrust_amplitude * cos(angle - thrust_phase);
             float F2 = thrust_mean - thrust_amplitude * cos(angle - thrust_phase);
 
-            throttle_right = (F1 / THRUST_CONSTANT);
-            throttle_left = (F2 / THRUST_CONSTANT);
+            throttle_right = (int16_t)(F1 / THRUST_CONSTANT);
+            throttle_left = (int16_t)(F2 / THRUST_CONSTANT);
 
             // if (abs(throttle_left) > 60)
             //     throttle_left += 200 * throttle_left / abs(throttle_left);
@@ -55,14 +55,6 @@ namespace fans
 
             throttle_right = constrain(throttle_right, -999, 999);
             throttle_left = constrain(throttle_left, -999, 999);
-
-            // Serial.print(throttle_center);
-            // Serial.print('\t');
-            // Serial.print(throttle_right);
-            // Serial.print('\t');
-            // Serial.print(throttle_left);
-            // Serial.print('\t');
-            // Serial.println();
 
             fan_center.sendThrottle3D(throttle_center);
             fan_right.sendThrottle3D(throttle_right);

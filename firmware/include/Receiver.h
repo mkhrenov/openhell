@@ -25,6 +25,8 @@ namespace rx {
     float ax_setpoint(void);
     float ay_setpoint(void);
 
+    float rad(void);
+
     void omega_telemetry(float omega);
     
     int channel(unsigned int channel_num);

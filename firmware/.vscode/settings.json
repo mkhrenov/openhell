@@ -9,6 +9,7 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "functional": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "cmath": "cpp"
     }
 }

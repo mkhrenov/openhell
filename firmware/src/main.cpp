@@ -39,6 +39,9 @@ void setup()
     pinMode(LED_BLUE, OUTPUT);
 
     strip.begin();
+    last_cycle_us = micros();
+
+    imus::calibrate();
 }
 
 void loop()
@@ -55,7 +58,7 @@ void loop()
     imus::update();
 
     // Integrate gyro
-    omega = imus::angular_velocity();
+    omega = imus::angular_velocity() - imus::get_offset();
     theta += omega * dt;
     rx::omega_telemetry(omega);
 
@@ -136,7 +139,7 @@ void loop()
         float phi_a = atan2f(ay, ax);
 
         // Only attempt to translate if we're spun-up
-        fans::set_thrust_amplitude((abs(omega) > 2 * PI ? 1.0 : (abs(omega) / (2 * PI))) * mag_a * m);
+        fans::set_thrust_amplitude((abs(omega) > 2.0 * PI ? 1.0 : (abs(omega) / (2.0 * PI))) * mag_a * m);
         fans::set_thrust_phase(phi_a);
     }
     else
@@ -196,11 +199,21 @@ void loop()
             digitalWrite(LED_BLUE, LOW);
             strip.setPixelColor(0, 0x00FF00FF);
             strip.setPixelColor(1, 0x00FF00FF);
+            if (theta > PI / 18.0)
+            {
+                strip.setPixelColor(0, 0);
+                strip.setPixelColor(1, 0);
+            }
             break;
         }
 
         strip.show();
         // imus::print();
+    }
+
+    if (state == STATE_CALIBRATION)
+    {
+        imus::set_rescale(1.0 - rx::rad());
     }
 
     // Update outputs

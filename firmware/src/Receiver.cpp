@@ -48,12 +48,12 @@ namespace rx
 
     float ax_setpoint(void)
     {
-        return (channel(CHAN_X) - 1500) * 1e-3; // m/s^2
+        return (channel(CHAN_X) - 1500) / 400.0; // m/s^2
     }
 
     float ay_setpoint(void)
     {
-        return (channel(CHAN_Y) - 1500) * 1e-3; // m/s^2
+        return (channel(CHAN_Y) - 1500) / 400.0; // m/s^2
     }
 
     void omega_telemetry(float omega)
@@ -67,6 +67,11 @@ namespace rx
             vario.verticalspd = htobe16((uint16_t)(100 * 60.0 * omega / 2.0 / PI)); // RPM
             crsf.queuePacket(CRSF_SYNC_BYTE, CRSF_FRAMETYPE_VARIO, &vario, sizeof(vario));
         }
+    }
+
+    float rad(void)
+    {
+        return (float)(channel(CHAN_RAD) - 1500) / 1000.0;
     }
 
 }

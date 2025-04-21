@@ -10,6 +10,8 @@ namespace imus
     sensors_event_t high_accel;
     float highg_radius = 0.048; // meters
     unsigned long last_imu_update_us = 0;
+    float offset = 0.0;
+    float rescale = 1.0;
 
     void begin(void)
     {
@@ -53,6 +55,22 @@ namespace imus
         }
     }
 
+    void calibrate(void)
+    {
+        delay(1000);
+        const int N = 2000;
+        offset = 0.0;
+
+        for (int i = 0; i < N; i++)
+        {
+            update();
+            offset += angular_velocity();
+            delay(1);
+        }
+
+        offset /= (float)N;
+    }
+
     float low_accel_x(void)
     {
         return lowg_imu.accelX();
@@ -90,20 +108,33 @@ namespace imus
         return high_accel.acceleration.z;
     }
 
+    float get_offset(void)
+    {
+        return offset;
+    }
+
     float angular_velocity(void)
     {
         float omega_lowg = gyro_y();
-        float omega_highg = sqrtf(high_accel_z() / highg_radius); // rad/s
+        float omega_highg = sqrtf(abs(high_accel_z()) / highg_radius); // rad/s
 
         const float lowg_cutoff_h = 2000.0 * PI / 180.0;
         const float lowg_cutoff_l = 1500.0 * PI / 180.0;
 
-        float f = (omega_lowg - lowg_cutoff_l) / (omega_highg - omega_lowg);
+        float f = (omega_lowg - lowg_cutoff_l) / (lowg_cutoff_h - lowg_cutoff_l);
+        // Serial.println(omega_lowg - lowg_cutoff_l);
+        // Serial.println(omega_lowg);
         f = constrain(f, 0.0, 1.0);
+        // Serial.println(f);
 
-        float omega = (1 - f) * omega_lowg + f * omega_highg;
+        float omega = (1.0 - f) * omega_lowg + f * omega_highg;
 
-        return omega;
+        // Serial.println(offset, 9);
+        return constrain(omega_lowg, -35.0, 35.0) * rescale; // omega;
+    }
+
+    void set_rescale(float rs) {
+        rescale = rs;
     }
 
     void print(void)
