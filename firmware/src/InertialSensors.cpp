@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <Preferences.h>
 #include "InertialSensors.h"
 
 namespace imus
@@ -11,11 +12,16 @@ namespace imus
     float highg_radius = 0.048; // meters
     unsigned long last_imu_update_us = 0;
     float offset = 0.0;
-    float rescale = 1.0;
+    float rescale_low = 1.0;
+    float rescale_high = 1.0;
+    Preferences preferences;
 
     void begin(void)
     {
         SPI.begin();
+        preferences.begin("imus", false);
+        rescale_low = preferences.getFloat("rescale_low", 1.0);
+        rescale_high = preferences.getFloat("rescale_high", 1.0);
 
         // Connect over SPI
         if (!highg_imu.begin_SPI(H3LIS331_CS))
@@ -46,10 +52,6 @@ namespace imus
         if (micros() - last_imu_update_us >= IMU_UPDATE_PERIOD_US)
         {
             last_imu_update_us = micros();
-            // lowg_imu.getEvent(&low_accel, &gyro, &temp);
-            // float sense;
-            // Serial.println(lowg_imu.Get_G_Sensitivity(&sense));
-            // Serial.println(sense);
             lowg_imu.update();
             highg_imu.getEvent(&high_accel);
         }
@@ -115,26 +117,32 @@ namespace imus
 
     float angular_velocity(void)
     {
-        float omega_lowg = gyro_y();
-        float omega_highg = sqrtf(abs(high_accel_z()) / highg_radius); // rad/s
+        float omega_lowg = rescale_low * gyro_y();
+        float omega_highg = rescale_high * sqrtf(abs(high_accel_z()) / highg_radius); // rad/s
 
         const float lowg_cutoff_h = 2000.0 * PI / 180.0;
         const float lowg_cutoff_l = 1500.0 * PI / 180.0;
 
         float f = (omega_lowg - lowg_cutoff_l) / (lowg_cutoff_h - lowg_cutoff_l);
-        // Serial.println(omega_lowg - lowg_cutoff_l);
-        // Serial.println(omega_lowg);
         f = constrain(f, 0.0, 1.0);
-        // Serial.println(f);
 
         float omega = (1.0 - f) * omega_lowg + f * omega_highg;
 
-        // Serial.println(offset, 9);
-        return constrain(omega_lowg, -35.0, 35.0) * rescale; // omega;
+        return omega;
     }
 
-    void set_rescale(float rs) {
-        rescale = rs;
+    void set_rescale_low(float rs)
+    {
+        rescale_low = rs;
+    }
+    void set_rescale_high(float rs)
+    {
+        rescale_high = rs;
+    }
+    void set_rescales_nv(void)
+    {
+        preferences.putFloat("rescale_low", rescale_low);
+        preferences.putFloat("rescale_high", rescale_high);
     }
 
     void print(void)

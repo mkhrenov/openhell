@@ -60,7 +60,7 @@ void loop()
     // Integrate gyro
     omega = imus::angular_velocity() - imus::get_offset();
     theta += omega * dt;
-    rx::omega_telemetry(omega);
+    // rx::omega_telemetry(omega);
 
     // Handle wraparound
     if (theta > 2 * PI)
@@ -111,13 +111,16 @@ void loop()
         else if (omega < 1.8 * PI)
             state = STATE_ARMED;
         else if (!rx::calibrating())
+        {
             state = STATE_SPUN_UP;
+            imus::set_rescales_nv();
+        }
         break;
     }
 
     // Handle center fan
     if ((state == STATE_ARMED) || (state == STATE_SPUN_UP) || (state == STATE_CALIBRATION))
-        fans::set_hover_throttle(rx::hover_throttle());
+        fans::set_hover_throttle((int16_t)(rx::hover_setpoint() * 999.0f));
     else
     {
         fans::set_hover_throttle(0);
@@ -139,7 +142,7 @@ void loop()
         float phi_a = atan2f(ay, ax);
 
         // Only attempt to translate if we're spun-up
-        fans::set_thrust_amplitude((abs(omega) > 2.0 * PI ? 1.0 : (abs(omega) / (2.0 * PI))) * mag_a * m);
+        fans::set_thrust_amplitude((abs(omega) > 2.0 * PI ? 1.0 : (abs(omega) / (2.0 * PI))) * mag_a);
         fans::set_thrust_phase(phi_a);
     }
     else
@@ -213,7 +216,8 @@ void loop()
 
     if (state == STATE_CALIBRATION)
     {
-        imus::set_rescale(1.0 - rx::rad());
+        imus::set_rescale_low(1.0 + rx::cal_low());
+        imus::set_rescale_high(1.0 + rx::cal_high());
     }
 
     // Update outputs

@@ -22,7 +22,9 @@ namespace imus {
     float high_accel_z(void);
 
     float get_offset(void);
-    void set_rescale(float rs);
+    void set_rescale_low(float rs);
+    void set_rescale_high(float rs);
+    void set_rescales_nv(void);
 
     float angular_velocity(void);
 

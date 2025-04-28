@@ -21,39 +21,43 @@ namespace rx
         return crsf.isLinkUp();
     }
 
+    float ax_setpoint(void)
+    {
+        return constrain((float)(channel(CHAN_AX) - 1500) / 500.0f, -1.0f, 1.0f);
+    }
+    float ay_setpoint(void)
+    {
+        return constrain((float)(channel(CHAN_AY) - 1500) / 500.0f, -1.0f, 1.0f);
+    }
+    float cal_low(void)
+    {
+        return constrain((float)(channel(CHAN_CAL_L) - 1500) / 500.0f, -1.0f, 1.0f);
+    }
+    float cal_high(void)
+    {
+        return constrain((float)(channel(CHAN_CAL_H) - 1500) / 500.0f, -1.0f, 1.0f);
+    }
+
     bool armed(void)
     {
         return channel(CHAN_ARM) > 1500;
     }
-
     bool calibrating(void)
     {
         return channel(CHAN_CAL) > 1500;
     }
 
-    int channel(unsigned int channel_num)
+    float hover_setpoint(void)
     {
-        return crsf.getChannel(channel_num);
+        return constrain((float)(channel(CHAN_HOV) - 1500) / 500.0f, -1.0f, 1.0f);
     }
-
-    int hover_throttle(void)
-    {
-        return (channel(CHAN_HOV) - 1000) * 2;
-    }
-
     float omega_setpoint(void)
     {
-        return ((float)(channel(CHAN_W) - 1500)) / 100.0; //* 2.0 * PI / 60.0 ; // rad/s
+        return constrain((float)(channel(CHAN_OMEGA) - 1500) / 500.0f, -1.0f, 1.0f);
     }
-
-    float ax_setpoint(void)
+    float dphi_setpoint(void)
     {
-        return (channel(CHAN_X) - 1500) / 400.0; // m/s^2
-    }
-
-    float ay_setpoint(void)
-    {
-        return (channel(CHAN_Y) - 1500) / 400.0; // m/s^2
+        return constrain((float)(channel(CHAN_DPHI) - 1500) / 500.0f, -1.0f, 1.0f);
     }
 
     void omega_telemetry(float omega)
@@ -69,9 +73,8 @@ namespace rx
         }
     }
 
-    float rad(void)
+    int channel(unsigned int channel_num)
     {
-        return (float)(channel(CHAN_RAD) - 1500) / 1000.0;
+        return crsf.getChannel(channel_num);
     }
-
 }

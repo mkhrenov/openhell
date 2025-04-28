@@ -4,8 +4,8 @@
 namespace fans
 {
     DShotESC fan_center;
-    DShotESC fan_left;
-    DShotESC fan_right;
+    DShotESC fan_back;
+    DShotESC fan_front;
 
     float battery_voltage = 15.1;
     float thrust_mean = 0;
@@ -13,8 +13,8 @@ namespace fans
     float thrust_phase = 0;
 
     int16_t throttle_center = 0;
-    int16_t throttle_left = 0;
-    int16_t throttle_right = 0;
+    int16_t throttle_back = 0;
+    int16_t throttle_front = 0;
 
     unsigned long last_fan_update_us = 0;
 
@@ -25,15 +25,15 @@ namespace fans
         fan_center.setReversed(false);
         fan_center.set3DMode(true);
 
-        fan_left.install(GPIO_FAN_LEFT, RMT_CHANNEL_2);
-        fan_left.init();
-        fan_left.setReversed(false);
-        fan_left.set3DMode(true);
+        fan_back.install(GPIO_FAN_BACK, RMT_CHANNEL_2);
+        fan_back.init();
+        fan_back.setReversed(false);
+        fan_back.set3DMode(true);
 
-        fan_right.install(GPIO_FAN_RIGHT, RMT_CHANNEL_3);
-        fan_right.init();
-        fan_right.setReversed(false);
-        fan_right.set3DMode(true);
+        fan_front.install(GPIO_FAN_FRONT, RMT_CHANNEL_3);
+        fan_front.init();
+        fan_front.setReversed(false);
+        fan_front.set3DMode(true);
     }
 
     void update(float angle)
@@ -42,23 +42,20 @@ namespace fans
         {
             last_fan_update_us = micros();
 
-            float F1 = thrust_mean + thrust_amplitude * cos(angle - thrust_phase);
-            float F2 = thrust_mean - thrust_amplitude * cos(angle - thrust_phase);
+            thrust_amplitude = constrain(thrust_amplitude, 0.0, min(thrust_mean, 1.0f - thrust_mean));
 
-            throttle_right = (int16_t)(F1 / THRUST_CONSTANT);
-            throttle_left = (int16_t)(F2 / THRUST_CONSTANT);
+            float F_front = thrust_mean - thrust_amplitude * cos(angle - thrust_phase - PI / 18.0f);
+            float F_back = thrust_mean + thrust_amplitude * cos(angle - thrust_phase - PI / 18.0f);
 
-            // if (abs(throttle_left) > 60)
-            //     throttle_left += 200 * throttle_left / abs(throttle_left);
-            // if (abs(throttle_right) > 60)
-            //     throttle_right += 200 * throttle_right / abs(throttle_right);
+            throttle_front = (int16_t)(F_front * 999.0f);
+            throttle_back = (int16_t)(F_back * 999.0f);
 
-            throttle_right = constrain(throttle_right, -999, 999);
-            throttle_left = constrain(throttle_left, -999, 999);
+            throttle_front = constrain(throttle_front, -999, 999);
+            throttle_back = constrain(throttle_back, -999, 999);
 
             fan_center.sendThrottle3D(throttle_center);
-            fan_right.sendThrottle3D(throttle_right);
-            fan_left.sendThrottle3D(throttle_left);
+            fan_front.sendThrottle3D(throttle_front);
+            fan_back.sendThrottle3D(throttle_back);
         }
     }
 
@@ -70,11 +67,15 @@ namespace fans
     void set_hover_throttle(int16_t throttle)
     {
         throttle_center = throttle;
+        if (abs(throttle) < 80)
+            throttle_center = 0;
     }
 
     void set_thrust_mean(float thrust)
     {
         thrust_mean = thrust;
+        if (abs(thrust_mean) < .08f)
+            thrust_mean = 0.0f;
     }
 
     void set_thrust_amplitude(float thrust)
