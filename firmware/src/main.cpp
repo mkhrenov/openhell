@@ -58,11 +58,13 @@ void loop()
     imus::update();
 
     // Integrate gyro
-    omega = imus::angular_velocity() - imus::get_offset();
+    omega = imus::angular_velocity() - imus::get_offset(); 
+
     theta += omega * dt;
+    theta += (abs(rx::dphi_setpoint()) < 1e-2 ? 0.0 : rx::dphi_setpoint()) * PI * dt;
     // rx::omega_telemetry(omega);
 
-    // Handle wraparound
+    // Handle wraparound w
     if (theta > 2 * PI)
         theta -= 2 * PI;
     else if (theta < 0)

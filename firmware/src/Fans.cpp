@@ -42,8 +42,6 @@ namespace fans
         {
             last_fan_update_us = micros();
 
-            thrust_amplitude = constrain(thrust_amplitude, 0.0, min(thrust_mean, 1.0f - thrust_mean));
-
             float F_front = thrust_mean - thrust_amplitude * cos(angle - thrust_phase - PI / 18.0f);
             float F_back = thrust_mean + thrust_amplitude * cos(angle - thrust_phase - PI / 18.0f);
 
@@ -74,7 +72,7 @@ namespace fans
     void set_thrust_mean(float thrust)
     {
         thrust_mean = thrust;
-        if (abs(thrust_mean) < .08f)
+        if (abs(thrust_mean) < .05f)
             thrust_mean = 0.0f;
     }
 

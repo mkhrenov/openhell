@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <Preferences.h>
 #include "InertialSensors.h"
+#include "Receiver.h"
 
 namespace imus
 {
@@ -125,6 +126,11 @@ namespace imus
 
         float f = (omega_lowg - lowg_cutoff_l) / (lowg_cutoff_h - lowg_cutoff_l);
         f = constrain(f, 0.0, 1.0);
+
+        if (rx::lowg_only())
+            f = 0.0;
+        if (rx::highg_only())
+            f = 1.0;
 
         float omega = (1.0 - f) * omega_lowg + f * omega_highg;
 

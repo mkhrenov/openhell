@@ -16,6 +16,9 @@ namespace rx {
     #define CHAN_OMEGA  8   // 128 position
     #define CHAN_DPHI   9   // 128 position
 
+    #define CHAN_LOWG_ONLY  10
+    #define CHAN_HIGHG_ONLY 11
+
     void begin(void);
     void update(void);
     bool connected(void);
@@ -27,6 +30,8 @@ namespace rx {
 
     bool armed(void);
     bool calibrating(void);
+    bool lowg_only(void);
+    bool highg_only(void);
 
     float hover_setpoint(void);
     float omega_setpoint(void);

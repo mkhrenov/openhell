@@ -46,6 +46,14 @@ namespace rx
     {
         return channel(CHAN_CAL) > 1500;
     }
+    bool lowg_only(void)
+    {
+        return channel(CHAN_LOWG_ONLY) > 1500;
+    }
+    bool highg_only(void)
+    {
+        return channel(CHAN_HIGHG_ONLY) > 1500;
+    }
 
     float hover_setpoint(void)
     {
