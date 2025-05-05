@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "H3LIS331DLTR")(type "KiCad")(uri "${KIPRJMOD}/symbols-and-footprints/H3LIS331DLTR/H3LIS331DLTR.pretty")(options "")(descr "H3LIS331DLTR IMU"))
+  (lib (name "H3LIS331DL-Breakout")(type "KiCad")(uri "${KIPRJMOD}/H3LIS331DL-Breakout.pretty")(options "")(descr ""))
+)

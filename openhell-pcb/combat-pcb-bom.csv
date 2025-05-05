@@ -1,0 +1,4 @@
+Comment,Designator,Footprint,Qty,LCSC Part Number
+100nF cap for IMU,C5,Capacitor_SMD:C_0603_1608Metric,1,C1591
+100nF cap for IMU,C6,Capacitor_SMD:C_0603_1608Metric,1,C1591
+LSM6DSRTR IMU,IC1,Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y,1,C784817
